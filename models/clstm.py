@@ -3,7 +3,7 @@
 import torch
 import torch.nn as nn
 
-from train import train_loop
+# from train import train_loop
 
 class CLSTM(nn.Module):
     
@@ -41,10 +41,10 @@ class CLSTM(nn.Module):
         return x
         
 
-def train_function():
-        model = CLSTM(1, 1, 2, 5)
-        train_loop(model, 50)
-        # Call train func\
+# def train_function():
+#         model = CLSTM(1, 1, 2, 5)
+#         train_loop(model, 5)
+#         # Call train func\
 
-if __name__ == "__main__":
-        train_function()
+# if __name__ == "__main__":
+#         train_function()

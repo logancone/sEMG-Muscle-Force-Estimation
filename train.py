@@ -5,12 +5,37 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from data_preprocess import load_data, SEMGDataset
+from models.cnn import CNN
+from models.clstm import CLSTM
+from models.tcn import TCN
+
+import argparse
+import logging
+
+parser = argparse.ArgumentParser(description="Training Loop Parameters")
+
+log = logging.Logger(__name__)
+
+log.addHandler(logging.FileHandler('text.txt'))
+log.addHandler(logging.StreamHandler())
+
+parser.add_argument('--model', required=True)
+parser.add_argument('--epochs', type=int, default=100)
+
+args = parser.parse_args()
     
+model = None
+if args.model.lower() == 'cnn':
+    model = CNN()
+elif args.model.lower() == 'clstm' or args.model.lower() == 'c-lstm':
+    model = CLSTM(1, 1, 2, 5)
+elif args.model.lower() == 'tcn':
+    model = TCN(1, 1, [30]*8, 7, 0.0)
+assert model != None, "Invalid model name, please enter cnn, clstm, or tcn"
 
 # Main training loop
 def train_loop(
         model: nn.Module,
-        num_epochs: int = 100,
         device: str = 'cuda:0'
 ):
     if not torch.cuda.is_available():
@@ -36,7 +61,7 @@ def train_loop(
     loss_function = nn.MSELoss()
     
     # Epoch loop
-    for epoch in range(num_epochs):
+    for epoch in range(args.epochs):
         train_running_loss = 0.0
         train_avg_loss = 0.0
 
@@ -88,7 +113,10 @@ def train_loop(
             scheduler.step(val_avg_loss)
 
 
+if __name__ == "__main__":
 
+    train_loop(model)
+    log.info("YAYYYY")
 
     
 

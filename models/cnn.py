@@ -3,11 +3,11 @@
 
 import torch.nn as nn
 
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) #Allows reference of train
+# import sys
+# import os
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) #Allows reference of train
 
-from train import train_loop
+# from train import train_loop
 
 # Construct the class
 class CNN(nn.Module):
@@ -52,10 +52,10 @@ class CNN(nn.Module):
 
         return x
     
-def train_function():
-        model = CNN()
-        train_loop(model, 50)
-        # Call train func\
+# def train_function():
+#         model = CNN()
+#         train_loop(model, 5)
+#         # Call train func\
 
-if __name__ == "__main__":
-        train_function()
+# if __name__ == "__main__":
+#         train_function()

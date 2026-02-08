@@ -1,7 +1,7 @@
 import torch.nn as nn
 from torch.nn.utils import weight_norm
 
-from train import train_loop
+# from train import train_loop
 
 
 # 1 Dimensional Chomping Layer to trim conv output
@@ -85,12 +85,12 @@ class TCN(nn.Module):
         return self.linear(y1[:, :, -1])
 
 
-def train_function():
+# def train_function():
     
-    model = TCN(1, 1, [30]*8, 7, 0.0)
-    train_loop(model, 50)
+#     model = TCN(1, 1, [30]*8, 7, 0.0)
+#     train_loop(model, 5)
 
 
-if __name__ == "__main__":
-        train_function()
+# if __name__ == "__main__":
+#         train_function()
 
