@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 
 from tqdm import tqdm
 
@@ -11,6 +11,23 @@ from models.tcn import TCN
 
 import argparse
 import logging
+
+class SEMGDataset(Dataset):
+    def __init__(self, data):
+        self.data = data
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        semg, force = self.data[idx]
+        semg = torch.tensor(semg, dtype=torch.float32)
+        force = torch.tensor(force, dtype=torch.float32)
+        semg = semg.unsqueeze(0)
+        
+        return semg, force
+    
+
 
 parser = argparse.ArgumentParser(description="Training Loop Parameters")
 
