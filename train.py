@@ -3,8 +3,6 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
 
 from tqdm import tqdm
-
-from data_preprocess import load_data, SEMGDataset
 from models.cnn import CNN
 from models.clstm import CLSTM
 from models.tcn import TCN
@@ -27,7 +25,6 @@ class SEMGDataset(Dataset):
         
         return semg, force
     
-
 
 parser = argparse.ArgumentParser(description="Training Loop Parameters")
 

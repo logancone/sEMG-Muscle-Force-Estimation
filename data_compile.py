@@ -106,7 +106,10 @@ if semgVals.size > maxIdx + 1:
 
 # Min-max normalization function
 def normalize_value(num, min_value, max_value):
-    new_num = (num - min_value) / (max_value - min_value)
+    if max_value - min_value == 0:
+        new_num = 0
+    else:
+        new_num = (num - min_value) / (max_value - min_value)
     return new_num
 
 normalized_semg_temp = []
