@@ -5,14 +5,14 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Data Collection Parameters")
 
-parser.add_argument('--subj_id', type=int, required=True)
+parser.add_argument('--subj_id', '-id', type=int, required=True)
 
-parser.add_argument('--age', type=int, required=True)
-parser.add_argument('--sex', type=int, required=True) # 0 for male, 1 for female
-parser.add_argument('--height', type=int, required=True) 
-parser.add_argument('--weight', type=int, required=True)
-parser.add_argument('--lifts_weights', type=bool, required=True)
-parser.add_argument('--activity_level', type=int, required=True)
+parser.add_argument('--age', '-a', type=int, required=True)
+parser.add_argument('--sex', '-s', type=int, required=True) # 0 for male, 1 for female
+parser.add_argument('--height', '-hi', type=int, required=True) 
+parser.add_argument('--weight', '-w', type=int, required=True)
+parser.add_argument('--lifts_weights', '-lw', type=bool, required=True)
+parser.add_argument('--activity_level', '-al', type=int, required=True)
 args = parser.parse_args()
 
 trial_id = 1
@@ -107,6 +107,7 @@ if semgVals.size > maxIdx + 1:
 # Min-max normalization function
 def normalize_value(num, min_value, max_value):
     if max_value - min_value == 0:
+        print("No range!!")
         new_num = 0
     else:
         new_num = (num - min_value) / (max_value - min_value)
