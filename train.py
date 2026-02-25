@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
+from torch.utils.tensorboard import SummaryWriter
 
 from tqdm import tqdm
 from models.cnn import CNN
@@ -11,6 +12,8 @@ import argparse
 import logging
 
 import numpy as np
+
+from datetime import datetime
 
 class SEMGDataset(Dataset):
     def __init__(self, semg, force):
@@ -71,18 +74,23 @@ def create_datasets(val_subj, test_subj):
     test_dataset = SEMGDataset(test_semg, test_force)
 
     return train_dataset, val_dataset, test_dataset
+
 parser = argparse.ArgumentParser(description="Training Loop Parameters")
-
-log = logging.Logger(__name__)
-
-log.addHandler(logging.FileHandler('text.txt'))
-log.addHandler(logging.StreamHandler())
 
 parser.add_argument('--model', required=True)
 parser.add_argument('--epochs', type=int, default=100)
 
 args = parser.parse_args()
-    
+
+logger = logging.Logger(__name__)
+
+filename = f"{args.model}_{datetime.strftime(datetime.now(), "%Y-%m-%d_%H-%M-%S")}"
+
+logger.addHandler(logging.FileHandler(f"logs/logger/{filename}.log"))
+logger.addHandler(logging.StreamHandler())
+
+writer = SummaryWriter(f"logs/writer/{filename}")
+
 model = None
 if args.model.lower() == 'cnn':
     model = CNN()
@@ -121,7 +129,7 @@ def train_loop(
 
         model.train()
 
-        progress_bar = tqdm(enumerate(train_dataloader), total=len(train_dataloader), desc=f"Epoch: {epoch+1} | Loss: {0.000}")
+        progress_bar = tqdm(enumerate(train_dataloader), total=len(train_dataloader), desc=f"Epoch: {epoch+1}")
 
         for batch_id, (semg, force) in progress_bar:
             semg = semg.to(device)
@@ -137,10 +145,13 @@ def train_loop(
 
             train_running_loss += loss.item()
             train_avg_loss = train_running_loss / (batch_id + 1)
-
-
-            progress_bar.set_description(f"Epoch: {epoch+1} | Loss: {train_avg_loss:.4f}")
+            
+            progress_bar.set_description(f"Epoch: {epoch+1}")
             progress_bar.set_postfix(loss=train_avg_loss)
+
+        logger.info(f"Epoch: {epoch+1} | Train Loss: {train_avg_loss:.5f}")
+
+        writer.add_scalar("Loss/train", train_avg_loss, epoch)
 
         # Validation
         model.eval()
@@ -149,7 +160,7 @@ def train_loop(
         val_avg_loss = 0.0
 
         with torch.no_grad():
-            progress_bar = tqdm(enumerate(val_dataloader), total=len(val_dataloader), desc=f"Evaluation | Loss: {0.000}")
+            progress_bar = tqdm(enumerate(val_dataloader), total=len(val_dataloader), desc=f"Validation")
             for batch_id, (semg, force) in progress_bar:
                 semg = semg.to(device)
                 force = force.to(device)
@@ -159,10 +170,12 @@ def train_loop(
                 loss = loss_function(output, force)
 
                 val_running_loss += loss.item()
-
                 val_avg_loss = val_running_loss / (batch_id + 1)
                 
-                progress_bar.set_description(f"Evaluation | Loss: {val_avg_loss:.4f}")
+                progress_bar.set_postfix(loss=val_avg_loss)
+
+            logger.info(f"Validation | Loss: {val_avg_loss}")
+            writer.add_scalar("Loss/val", val_avg_loss, epoch)
 
             scheduler.step(val_avg_loss)
 
@@ -170,7 +183,7 @@ def train_loop(
 if __name__ == "__main__":
 
     train_loop(model)
-    log.info("YAYYYY")
+    logger.info("Training Complete!")
 
     
 
