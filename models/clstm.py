@@ -21,7 +21,7 @@ class CLSTM(nn.Module):
         self.batch2 = nn.BatchNorm1d(32)
         self.relu3 = nn.ReLU()
 
-        self.lstm = nn.LSTM(input_size=23, hidden_size=hidden_size, num_layers=num_layers, batch_first=True)
+        self.lstm = nn.LSTM(input_size=203, hidden_size=hidden_size, num_layers=num_layers, batch_first=True)
         self.fc1 = nn.Linear(32*hidden_size, output_size)
 
 

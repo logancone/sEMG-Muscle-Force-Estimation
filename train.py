@@ -10,22 +10,67 @@ from models.tcn import TCN
 import argparse
 import logging
 
+import numpy as np
+
 class SEMGDataset(Dataset):
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, semg, force):
+        self.semg = torch.tensor(semg, dtype=torch.float32)
+        self.force = torch.tensor(force, dtype=torch.float32)
     
     def __len__(self):
-        return len(self.data)
+        return len(self.force)
     
     def __getitem__(self, idx):
-        semg, force = self.data[idx]
-        semg = torch.tensor(semg, dtype=torch.float32)
-        force = torch.tensor(force, dtype=torch.float32)
-        semg = semg.unsqueeze(0)
+        x = self.semg[idx].unsqueeze(0)
+        y = self.force[idx].unsqueeze(0)
         
-        return semg, force
+        return x, y
     
 
+def create_datasets(val_subj, test_subj):
+    subject_count = 14 #Constant, update as needed
+
+    #Ensure all params are valid
+    assert val_subj != test_subj
+    assert val_subj <= subject_count and val_subj >= 1
+    assert test_subj <= subject_count and test_subj >= 1
+
+    train_semg = []
+    train_force = []
+    val_semg = []
+    val_force = []
+    test_semg = []
+    test_force = []
+
+    for i in range(1, subject_count+1):
+        # TEMPORARY!!!! REMOVE ONCE SUVJECT 5 DATA COLLECTED AND PROCESSED !!!!!!!!
+        if i == 5:
+            continue
+        filename = f"processed_data/Subject_{i}_Processed.npz"
+        data = np.load(filename)
+
+        if i == val_subj:
+            val_semg.append(data['windowed_semg'])
+            val_force.append(data['windowed_force'])
+        elif i == test_subj:
+            test_semg.append(data['windowed_semg'])
+            test_force.append(data['windowed_force'])
+        else:
+            train_semg.append(data['windowed_semg'])
+            train_force.append(data['windowed_force'])
+        
+    train_semg = np.vstack(train_semg)
+    train_force = np.concatenate(train_force)
+    val_semg = np.vstack(val_semg)
+    val_force = np.concatenate(val_force)
+    test_semg = np.vstack(test_semg)
+    test_force = np.concatenate(test_force)
+
+    train_dataset = SEMGDataset(train_semg, train_force)
+    val_dataset = SEMGDataset(val_semg, val_force)
+    test_dataset = SEMGDataset(test_semg, test_force)
+
+    return train_dataset, val_dataset, test_dataset
 parser = argparse.ArgumentParser(description="Training Loop Parameters")
 
 log = logging.Logger(__name__)
@@ -56,12 +101,7 @@ def train_loop(
         print("Fail to use GPU.")
         device = 'cpu'
 
-    
-    raw_train_data, raw_val_data, raw_test_data = load_data("test_data.npz", 2, 3, 20, 5)
-
-    train_dataset = SEMGDataset(raw_train_data)
-    val_dataset = SEMGDataset(raw_val_data)
-    test_dataset = SEMGDataset(raw_test_data)
+    train_dataset, val_dataset, test_dataset = create_datasets(3, 6)
 
     train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True)
     val_dataloader = DataLoader(val_dataset, batch_size=16, shuffle=False)
