@@ -7,36 +7,42 @@ import torch.nn as nn
 
 class CLSTM(nn.Module):
     
-    def __init__(self, input_size, output_size, hidden_size, num_layers):
+    def __init__(self, hidden_size, num_layers):
         super(CLSTM, self).__init__()
 
-        self.conv1 = nn.Conv1d(input_size, 64, kernel_size=2, stride=1)
-        self.relu1 = nn.ReLU()
+        self.conv_1 = nn.Sequential(
+            nn.Conv1d(1, 64, kernel_size=2, stride=1),
+            nn.ReLU()
+        )
 
-        self.conv2 = nn.Conv1d(64, 32, kernel_size=1, stride=1, padding=1)
-        self.batch1 = nn.BatchNorm1d(32)
-        self.relu2 = nn.ReLU()
+        self.conv_2 = nn.Sequential(
+            nn.Conv1d(64, 32, kernel_size=1, stride=1),
+            nn.BatchNorm1d(32),
+            nn.ReLU()
+        )
+        
+        self.conv_3 = nn.Sequential(
+            nn.Conv1d(32, 32, kernel_size=1, stride=1),
+            nn.BatchNorm1d(32),
+            nn.ReLU()
+        )
 
-        self.conv3 = nn.Conv1d(32, 32, kernel_size=1, stride=1, padding=1)
-        self.batch2 = nn.BatchNorm1d(32)
-        self.relu3 = nn.ReLU()
-
-        self.lstm = nn.LSTM(input_size=203, hidden_size=hidden_size, num_layers=num_layers, batch_first=True)
-        self.fc1 = nn.Linear(32*hidden_size, output_size)
+        self.lstm = nn.LSTM(input_size=32, hidden_size=hidden_size, num_layers=num_layers, batch_first=True)
+        
+        self.fcs = nn.Linear(hidden_size, 1)
 
 
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.relu1(x)
-        x = self.conv2(x)
-        x = self.batch1(x)
-        x = self.relu2(x)
-        x = self.conv3(x)
-        x = self.batch2(x)
-        x = self.relu3(x)
+        x = self.conv_1(x)
+        x = self.conv_2(x)
+        x = self.conv_3(x)
+
+        x = x.permute(0, 2, 1)
+
+        
         x, h = self.lstm(x)
-        x = torch.reshape(x,(x.shape[0],x.shape[1]*x.shape[2]))
-        x = self.fc1(x)
+        x = x[:, -1, :]  
+        x = self.fcs(x)
 
         return x
         

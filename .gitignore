@@ -1,2 +1,4 @@
 # *.npz
-raw_data/
+raw_data/raw_data_chunks/
+raw_data/raw_mvc_trials/
+logs/

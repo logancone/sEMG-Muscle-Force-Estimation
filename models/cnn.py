@@ -35,13 +35,13 @@ class CNN(nn.Module):
         self.fcs = nn.Sequential(
             nn.Flatten(),
             nn.Linear(3072, 384),
-            nn.BatchNorm1d(384),
+            # nn.BatchNorm1d(384),
             nn.ReLU(),
             nn.Linear(384,96),
-            nn.BatchNorm1d(96),
+            # nn.BatchNorm1d(96),
             nn.ReLU(),
             nn.Linear(96,32),
-            nn.BatchNorm1d(32),
+            # nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.Linear(32, 1)
         )
