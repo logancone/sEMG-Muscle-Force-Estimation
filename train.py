@@ -17,7 +17,13 @@ from datetime import datetime
 
 from pathlib import Path
 
-subject_count = 14 #Constant, update as needed
+import random
+
+# Constants
+subject_count = 17
+train_epochs = 100
+tl_epochs = 5
+patience = 10
 
 class SEMGDataset(Dataset):
     def __init__(self, semg, force):
@@ -49,9 +55,6 @@ def create_datasets(val_subj, test_subj):
     test_force = []
 
     for i in range(1, subject_count+1):
-        # TEMPORARY!!!! REMOVE ONCE SUVJECT 5 DATA COLLECTED AND PROCESSED !!!!!!!!
-        if i == 5:
-            continue
         filename = f"processed_data/Subject_{i}_Processed.npz"
         data = np.load(filename)
 
@@ -96,6 +99,9 @@ def train_loop(
         model: nn.Module,
         train_dataloader: DataLoader,
         val_dataloader: DataLoader,
+        logger: logging.Logger,
+        writer: SummaryWriter,
+        save_dir: Path,
         device: str = 'cuda:0'
 ):
     if not torch.cuda.is_available():
@@ -108,9 +114,12 @@ def train_loop(
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10)
 
     loss_function = nn.MSELoss()
+
+    best_val_loss = float('inf')
+    patience_counter = 0
     
     # Epoch loop
-    for epoch in range(args.train_epochs):
+    for epoch in range(train_epochs):
         train_running_loss = 0.0
         train_avg_loss = 0.0
 
@@ -164,13 +173,29 @@ def train_loop(
             logger.info(f"Validation | Loss: {val_avg_loss:.5f}")
             writer.add_scalar("Loss/val", val_avg_loss, epoch)
 
-            torch.save(model.state_dict(), f"{folder_path}/{args.model}_pre_tl.pt")
+            
 
             scheduler.step(val_avg_loss)
+        
+        if val_avg_loss < best_val_loss - 5e-4:
+            best_val_loss = val_avg_loss
+            patience_counter = 0
+            torch.save(model.state_dict(), f"{save_dir}/model_pre_tl.pt")
+        else:
+            patience_counter += 1
+        
+        if patience_counter >= patience:
+            logger.info(f"Early stopping triggered on epoch {epoch+1}")
+            break
+
+
 
 def fine_tune(
         model: nn.Module,
         tl_dataloader: DataLoader,
+        logger: logging.Logger,
+        writer: SummaryWriter,
+        save_dir: Path,
         device: str = 'cuda:0',
 ):
    
@@ -185,9 +210,11 @@ def fine_tune(
         lr=1e-4
     )
     loss_function = nn.MSELoss()
+
+    best_tl_loss = float('inf')
     
     # Epoch loop
-    for epoch in range(args.tl_epochs):
+    for epoch in range(tl_epochs):
         tl_running_loss = 0.0
         tl_avg_loss = 0.0
 
@@ -217,15 +244,16 @@ def fine_tune(
 
         writer.add_scalar("Loss/tl", tl_avg_loss, epoch)
 
-        torch.save(model.state_dict(), f"{folder_path}/{args.model}_best_post_tl.pt")
+        if tl_avg_loss < best_tl_loss:
+            best_tl_loss = tl_avg_loss
+            torch.save(model.state_dict(), f"{save_dir}/model_post_tl.pt")
 
-        
-
-    # evaluate(model)
 
 def evaluate(
         model: nn.Module,
         test_dataloader: DataLoader,
+        logger: logging.Logger,
+        writer: SummaryWriter,
         device: str = 'cuda:0'
 ):
     if not torch.cuda.is_available():
@@ -263,7 +291,15 @@ def evaluate(
         logger.info(f"Test | Loss: {test_avg_loss:.5f}")
         writer.add_scalar("Loss/test", test_avg_loss)
 
-def train_cnn(val_id, test_id):
+def train_cnn(test_id, val_id):
+    # Establish logger and writer
+    folder_path = Path(f"logs/{datetime.strftime(datetime.now(), '%Y-%m-%d__%H-%M-%S')}_CNN")
+    folder_path.mkdir()
+    model_logger = logging.Logger(__name__)
+    model_logger.addHandler(logging.FileHandler(f"{folder_path}/logger.log"))
+    model_logger.addHandler(logging.StreamHandler())
+    writer = SummaryWriter(f"{folder_path}/writer")
+
     # Create datasets and dataloaders
     train_dataset, val_dataset, tl_dataset, test_dataset = create_datasets(val_id, test_id)
     train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True)
@@ -271,12 +307,14 @@ def train_cnn(val_id, test_id):
     tl_dataloader = DataLoader(tl_dataset, batch_size=16, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
-    # Log current model
-    logger.info("CNN")
+    # Log current model and subj info
+    model_logger.info("CNN")
+    model_logger.info(f"Test Subject Id: {test_id} | Val Subject Id: {val_id}")
 
     # Create the initial model, and begin training
     model_before_tl = CNN()
-    train_loop(model_before_tl, train_dataloader, val_dataloader)
+    train_loop(model_before_tl, train_dataloader, val_dataloader, model_logger, writer, folder_path)
+    model_before_tl.load_state_dict(torch.load(f"{folder_path}/model_pre_tl.pt"))
 
     # Clone the trained model by creating a new model and loading the other model's params
     model_after_tl = CNN()
@@ -294,15 +332,24 @@ def train_cnn(val_id, test_id):
     model_after_tl.fcs.train()
 
     # Fine tune cloned model on tl data
-    fine_tune(model_after_tl, tl_dataloader)
+    fine_tune(model_after_tl, tl_dataloader, model_logger, writer, folder_path)
+    model_after_tl.load_state_dict(torch.load(f"{folder_path}/model_post_tl.pt"))
 
     # Evaluate both models on same test data
-    logger.info("Before TL:")
-    evaluate(model_before_tl, test_dataloader)
-    logger.info("After TL:")
-    evaluate(model_after_tl, test_dataloader)
+    model_logger.info("Before TL:")
+    evaluate(model_before_tl, test_dataloader, model_logger, writer)
+    model_logger.info("After TL:")
+    evaluate(model_after_tl, test_dataloader, model_logger, writer)
 
-def train_clstm(val_id, test_id):
+def train_clstm(test_id, val_id):
+    # Establish logger and writer
+    folder_path = Path(f"logs/{datetime.strftime(datetime.now(), '%Y-%m-%d__%H-%M-%S')}_CLSTM")
+    folder_path.mkdir()
+    model_logger = logging.Logger(__name__)
+    model_logger.addHandler(logging.FileHandler(f"{folder_path}/logger.log"))
+    model_logger.addHandler(logging.StreamHandler())
+    writer = SummaryWriter(f"{folder_path}/writer")
+
     # Create datasets and dataloaders
     train_dataset, val_dataset, tl_dataset, test_dataset = create_datasets(val_id, test_id)
     train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True)
@@ -310,12 +357,14 @@ def train_clstm(val_id, test_id):
     tl_dataloader = DataLoader(tl_dataset, batch_size=16, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
-    # Log current model
-    logger.info("C-LSTM")
+    # Log current model and subj info
+    model_logger.info("C-LSTM")
+    model_logger.info(f"Test Subject Id: {test_id} | Val Subject Id: {val_id}")
 
     # Create the initial model, and begin training
     model_before_tl = CLSTM(2, 5)
-    train_loop(model_before_tl, train_dataloader, val_dataloader)
+    train_loop(model_before_tl, train_dataloader, val_dataloader, model_logger, writer, folder_path)
+    model_before_tl.load_state_dict(torch.load(f"{folder_path}/model_pre_tl.pt"))
 
     # Clone the trained model by creating a new model and loading the other model's params
     model_after_tl = CLSTM(2, 5)
@@ -336,16 +385,24 @@ def train_clstm(val_id, test_id):
     model_after_tl.fcs.train()
 
     # Fine tune cloned model on tl data
-    fine_tune(model_after_tl, tl_dataloader)
+    fine_tune(model_after_tl, tl_dataloader, model_logger, writer, folder_path)
+    model_after_tl.load_state_dict(torch.load(f"{folder_path}/model_post_tl.pt"))
 
     # Evaluate both models on same test data
-    logger.info("Before TL:")
-    evaluate(model_before_tl, test_dataloader)
-    logger.info("After TL:")
-    evaluate(model_after_tl, test_dataloader)
+    model_logger.info("Before TL:")
+    evaluate(model_before_tl, test_dataloader, model_logger, writer)
+    model_logger.info("After TL:")
+    evaluate(model_after_tl, test_dataloader, model_logger, writer)
 
+def train_tcn(test_id, val_id):
+    # Establish logger and writer
+    folder_path = Path(f"logs/{datetime.strftime(datetime.now(), '%Y-%m-%d__%H-%M-%S')}_TCN")
+    folder_path.mkdir()
+    model_logger = logging.Logger(__name__)
+    model_logger.addHandler(logging.FileHandler(f"{folder_path}/logger.log"))
+    model_logger.addHandler(logging.StreamHandler())
+    writer = SummaryWriter(f"{folder_path}/writer")
 
-def train_tcn(val_id, test_id):
     # Create datasets and dataloaders
     train_dataset, val_dataset, tl_dataset, test_dataset = create_datasets(val_id, test_id)
     train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True)
@@ -353,12 +410,14 @@ def train_tcn(val_id, test_id):
     tl_dataloader = DataLoader(tl_dataset, batch_size=16, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
-    # Log current model
-    logger.info("TCN")
+    # Log current model and subj info
+    model_logger.info("TCN")
+    model_logger.info(f"Test Subject Id: {test_id} | Val Subject Id: {val_id}")
 
     # Create the initial model, and begin training
     model_before_tl = TCN(1, 1, [30]*8, 7, 0.0)
-    train_loop(model_before_tl, train_dataloader, val_dataloader)
+    train_loop(model_before_tl, train_dataloader, val_dataloader, model_logger, writer, folder_path)
+    model_before_tl.load_state_dict(torch.load(f"{folder_path}/model_pre_tl.pt"))
 
     # Clone the trained model by creating a new model and loading the other model's params
     model_after_tl = TCN(1, 1, [30]*8, 7, 0.0)
@@ -373,52 +432,26 @@ def train_tcn(val_id, test_id):
     model_after_tl.linear.train()
 
     # Fine tune cloned model on tl data
-    fine_tune(model_after_tl, tl_dataloader)
+    fine_tune(model_after_tl, tl_dataloader, model_logger, writer, folder_path)
+    model_after_tl.load_state_dict(torch.load(f"{folder_path}/model_post_tl.pt"))
 
     # Evaluate both models on same test data
-    logger.info("Before TL:")
-    evaluate(model_before_tl, test_dataloader)
-    logger.info("After TL:")
-    evaluate(model_after_tl, test_dataloader)
+    model_logger.info("Before TL:")
+    evaluate(model_before_tl, test_dataloader, model_logger, writer)
+    model_logger.info("After TL:")
+    evaluate(model_after_tl, test_dataloader, model_logger, writer)
+
+def full_train_loop():
+    for i in range(1, subject_count+1):
+        val_id = random.randint(1, subject_count)
+        while val_id == i or val_id == 5:
+            val_id = random.randint(1, subject_count)
+        
+        print(f"Test Subject Id: {i} | Val Subject Id: {val_id}")
+        train_cnn(i, val_id)
+        train_clstm(i, val_id)
+        train_tcn(i, val_id)
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Training Loop Parameters")
-    parser.add_argument('--model', required=True)
-    parser.add_argument('--train_epochs', type=int, default=100)
-    parser.add_argument('--tl_epochs', type=int, default=5)
-
-    args = parser.parse_args()
-
-    folder_path = Path(f"logs/{args.model}_{datetime.strftime(datetime.now(), "%Y-%m-%d__%H-%M-%S")}")
-    folder_path.mkdir()
-
-    logger = logging.Logger(__name__)
-    logger.addHandler(logging.FileHandler(f"{folder_path}/logger.log"))
-    logger.addHandler(logging.StreamHandler())
-
-    writer = SummaryWriter(f"{folder_path}/writer")
-
-    assert args.model.lower() in ('cnn', 'clstm', 'tcn', 'all')
-
-
-    train_dataset, val_dataset, tl_dataset, test_dataset = create_datasets(2, 4)
-
-    train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-    val_dataloader = DataLoader(val_dataset, batch_size=16, shuffle=False)
-    tl_dataloader = DataLoader(tl_dataset, batch_size=16, shuffle=True)
-    test_dataloader = DataLoader(test_dataset, batch_size=16, shuffle=False)
-
-
-    if args.model.lower() == 'cnn':
-        train_cnn(2, 4)
-    
-    elif args.model.lower() == 'clstm':
-        train_clstm(2, 4)
-
-    elif args.model.lower() == 'tcn':
-        train_tcn(2, 4)
-
-    elif args.model.lower() == 'all':
-        train_cnn(2, 4)
-        train_clstm(2,4)
-        train_tcn(2,4)
+    full_train_loop()
