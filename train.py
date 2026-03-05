@@ -23,7 +23,8 @@ import random
 subject_count = 17
 train_epochs = 100
 tl_epochs = 5
-patience = 10
+patience = 25
+min_delta = 1e-5
 
 class SEMGDataset(Dataset):
     def __init__(self, semg, force):
@@ -111,7 +112,7 @@ def train_loop(
     model = model.to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor = 0.5, patience=5)
 
     loss_function = nn.MSELoss()
 
@@ -177,7 +178,7 @@ def train_loop(
 
             scheduler.step(val_avg_loss)
         
-        if val_avg_loss < best_val_loss - 5e-4:
+        if val_avg_loss < best_val_loss - min_delta:
             best_val_loss = val_avg_loss
             patience_counter = 0
             torch.save(model.state_dict(), f"{save_dir}/model_pre_tl.pt")
@@ -442,7 +443,7 @@ def train_tcn(test_id, val_id):
     evaluate(model_after_tl, test_dataloader, model_logger, writer)
 
 def full_train_loop():
-    for i in range(1, subject_count+1):
+    for i in range(subject_count, 0, -1): #TEMP REVERSE
         val_id = random.randint(1, subject_count)
         while val_id == i or val_id == 5:
             val_id = random.randint(1, subject_count)
@@ -454,4 +455,5 @@ def full_train_loop():
 
 
 if __name__ == "__main__":
-    full_train_loop()
+    # full_train_loop()
+    train_cnn(17, 8)
