@@ -453,7 +453,26 @@ def full_train_loop():
         train_clstm(i, val_id)
         train_tcn(i, val_id)
 
+def train_to_failure():
+    temp = Path.read_text(Path('subj_combos.txt')).splitlines()
+    avail_combos = []
+    for t in temp:
+        avail_combos.append(eval(t))
+    
+    while len(avail_combos) > 0:
+        combo_id = random.randint(0, len(avail_combos))
+        tup = avail_combos.pop(combo_id)
+        
+        print(f"Test Subject Id: {tup[0]} | Val Subject Id: {tup[1]}")
+        train_cnn(tup[0], tup[1])
+        train_clstm(tup[0], tup[1])
+        train_tcn(tup[0], tup[1])
+
+        
+
+
 
 if __name__ == "__main__":
     # full_train_loop()
-    train_cnn(17, 8)
+    # train_cnn(17, 8)
+    train_to_failure()

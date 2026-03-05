@@ -1,6 +1,6 @@
 from pathlib import Path
 
-#Save each entry as [model, test_subj, val_subj, pre_tl_loss, post_tl_loss, num_epochs]
+#Save each entry as [model, test_subj, val_subj, pre_tl_loss, post_tl_loss, num_epochs, path]
 def compile_logs():
     for entry in Path('logs/').iterdir():
         if str(entry)[26:] == 'CNN':
@@ -23,8 +23,8 @@ def compile_logs():
         epoch_id = raw_log.find("Early stopping triggered on epoch ")
         num_epochs = int(raw_log[epoch_id+34: epoch_id+36])
 
-        print((model, test_subj, val_subj, pre_tl_loss, post_tl_loss, num_epochs))
-        runs.append((model, test_subj, val_subj, pre_tl_loss, post_tl_loss, num_epochs))
+        # print((model, test_subj, val_subj, pre_tl_loss, post_tl_loss, num_epochs))
+        runs.append((model, test_subj, val_subj, pre_tl_loss, post_tl_loss, num_epochs, entry))
 
 def print_avail_subj_combs():
     unused_combs = []
@@ -37,7 +37,8 @@ def print_avail_subj_combs():
         if (run[1], run[2]) in unused_combs:
             unused_combs.remove((run[1], run[2]))
 
-    print(unused_combs)
+    for comb in unused_combs:
+        print(comb)
 
 def print_avg_loss():
     cnn_no_tl = []
@@ -62,9 +63,19 @@ def print_avg_loss():
     print(f"C-LSTM: Pre-TL: {sum(clstm_no_tl)/len(clstm_no_tl)} | Post-TL: {sum(clstm_tl)/len(clstm_tl)}")
     print(f"TCN: Pre-TL: {sum(tcn_no_tl)/len(tcn_no_tl)} | Post-TL: {sum(tcn_tl)/len(tcn_tl)}")
 
+
+def find_dupe():
+    combos = []
+    for run in runs:
+        if (run[0], run[1], run[2]) not in combos:
+            combos.append((run[0], run[1], run[2]))
+        else:
+            print(f"Dupe at: {run[6]}")
+
+        
 if __name__ == '__main__':
     runs = []
     compile_logs()
-    # print_avail_subj_combs()
-    print_avg_loss()
-    
+    print_avail_subj_combs()
+    # find_dupe()
+    # print_avg_loss()
