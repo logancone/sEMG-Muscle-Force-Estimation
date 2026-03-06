@@ -21,9 +21,12 @@ def compile_logs():
         post_tl_loss = float(raw_log[loss_id+44:loss_id+51])
 
         epoch_id = raw_log.find("Early stopping triggered on epoch ")
-        num_epochs = int(raw_log[epoch_id+34: epoch_id+36])
+        if epoch_id > 0:
+            num_epochs = int(raw_log[epoch_id+34: epoch_id+36])
+        else:
+            num_epochs = 100
 
-        # print((model, test_subj, val_subj, pre_tl_loss, post_tl_loss, num_epochs))
+        print((model, test_subj, val_subj, pre_tl_loss, post_tl_loss, num_epochs, entry))
         runs.append((model, test_subj, val_subj, pre_tl_loss, post_tl_loss, num_epochs, entry))
 
 def print_avail_subj_combs():
@@ -72,10 +75,19 @@ def find_dupe():
         else:
             print(f"Dupe at: {run[6]}")
 
-        
+def find_loss_under_x(target_loss: float):
+    included_runs = []
+    for run in runs:
+        if run[4] <= target_loss or run[3] <= target_loss:
+            included_runs.append(run)
+
+    for run in included_runs:
+        print(run)
+
 if __name__ == '__main__':
     runs = []
     compile_logs()
     print_avail_subj_combs()
     # find_dupe()
     # print_avg_loss()
+    # find_loss_under_x(.01)

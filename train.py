@@ -460,16 +460,13 @@ def train_to_failure():
         avail_combos.append(eval(t))
     
     while len(avail_combos) > 0:
-        combo_id = random.randint(0, len(avail_combos))
+        combo_id = random.randint(0, len(avail_combos)//2)
         tup = avail_combos.pop(combo_id)
-        
+
         print(f"Test Subject Id: {tup[0]} | Val Subject Id: {tup[1]}")
         train_cnn(tup[0], tup[1])
         train_clstm(tup[0], tup[1])
         train_tcn(tup[0], tup[1])
-
-        
-
 
 
 if __name__ == "__main__":
