@@ -1,0 +1,148 @@
+C-LSTM
+Test Subject Id: 4 | Val Subject Id: 17
+Epoch: 1 | Train Loss: 0.01931
+Validation | Loss: 0.01539
+Epoch: 2 | Train Loss: 0.01455
+Validation | Loss: 0.01032
+Epoch: 3 | Train Loss: 0.01435
+Validation | Loss: 0.01088
+Epoch: 4 | Train Loss: 0.01357
+Validation | Loss: 0.01139
+Epoch: 5 | Train Loss: 0.01324
+Validation | Loss: 0.00993
+Epoch: 6 | Train Loss: 0.01302
+Validation | Loss: 0.01034
+Epoch: 7 | Train Loss: 0.01272
+Validation | Loss: 0.01035
+Epoch: 8 | Train Loss: 0.01262
+Validation | Loss: 0.00915
+Epoch: 9 | Train Loss: 0.01253
+Validation | Loss: 0.00943
+Epoch: 10 | Train Loss: 0.01242
+Validation | Loss: 0.01058
+Epoch: 11 | Train Loss: 0.01238
+Validation | Loss: 0.00938
+Epoch: 12 | Train Loss: 0.01244
+Validation | Loss: 0.00884
+Epoch: 13 | Train Loss: 0.01222
+Validation | Loss: 0.00868
+Epoch: 14 | Train Loss: 0.01218
+Validation | Loss: 0.00911
+Epoch: 15 | Train Loss: 0.01213
+Validation | Loss: 0.00885
+Epoch: 16 | Train Loss: 0.01215
+Validation | Loss: 0.00872
+Epoch: 17 | Train Loss: 0.01215
+Validation | Loss: 0.00966
+Epoch: 18 | Train Loss: 0.01209
+Validation | Loss: 0.00898
+Epoch: 19 | Train Loss: 0.01214
+Validation | Loss: 0.00954
+Epoch: 20 | Train Loss: 0.01204
+Validation | Loss: 0.00901
+Epoch: 21 | Train Loss: 0.01194
+Validation | Loss: 0.00849
+Epoch: 22 | Train Loss: 0.01190
+Validation | Loss: 0.00882
+Epoch: 23 | Train Loss: 0.01187
+Validation | Loss: 0.00908
+Epoch: 24 | Train Loss: 0.01188
+Validation | Loss: 0.00925
+Epoch: 25 | Train Loss: 0.01188
+Validation | Loss: 0.00815
+Epoch: 26 | Train Loss: 0.01183
+Validation | Loss: 0.00873
+Epoch: 27 | Train Loss: 0.01182
+Validation | Loss: 0.00922
+Epoch: 28 | Train Loss: 0.01185
+Validation | Loss: 0.00846
+Epoch: 29 | Train Loss: 0.01182
+Validation | Loss: 0.00876
+Epoch: 30 | Train Loss: 0.01184
+Validation | Loss: 0.00842
+Epoch: 31 | Train Loss: 0.01183
+Validation | Loss: 0.00844
+Epoch: 32 | Train Loss: 0.01176
+Validation | Loss: 0.00883
+Epoch: 33 | Train Loss: 0.01174
+Validation | Loss: 0.00874
+Epoch: 34 | Train Loss: 0.01172
+Validation | Loss: 0.00843
+Epoch: 35 | Train Loss: 0.01172
+Validation | Loss: 0.00858
+Epoch: 36 | Train Loss: 0.01171
+Validation | Loss: 0.00843
+Epoch: 37 | Train Loss: 0.01171
+Validation | Loss: 0.00825
+Epoch: 38 | Train Loss: 0.01168
+Validation | Loss: 0.00858
+Epoch: 39 | Train Loss: 0.01167
+Validation | Loss: 0.00833
+Epoch: 40 | Train Loss: 0.01168
+Validation | Loss: 0.00862
+Epoch: 41 | Train Loss: 0.01168
+Validation | Loss: 0.00841
+Epoch: 42 | Train Loss: 0.01168
+Validation | Loss: 0.00853
+Epoch: 43 | Train Loss: 0.01166
+Validation | Loss: 0.00806
+Epoch: 44 | Train Loss: 0.01165
+Validation | Loss: 0.00882
+Epoch: 45 | Train Loss: 0.01166
+Validation | Loss: 0.00832
+Epoch: 46 | Train Loss: 0.01165
+Validation | Loss: 0.00821
+Epoch: 47 | Train Loss: 0.01166
+Validation | Loss: 0.00959
+Epoch: 48 | Train Loss: 0.01166
+Validation | Loss: 0.00820
+Epoch: 49 | Train Loss: 0.01164
+Validation | Loss: 0.00830
+Epoch: 50 | Train Loss: 0.01162
+Validation | Loss: 0.00829
+Epoch: 51 | Train Loss: 0.01163
+Validation | Loss: 0.00843
+Epoch: 52 | Train Loss: 0.01163
+Validation | Loss: 0.00823
+Epoch: 53 | Train Loss: 0.01163
+Validation | Loss: 0.00828
+Epoch: 54 | Train Loss: 0.01162
+Validation | Loss: 0.00842
+Epoch: 55 | Train Loss: 0.01164
+Validation | Loss: 0.00842
+Epoch: 56 | Train Loss: 0.01161
+Validation | Loss: 0.00839
+Epoch: 57 | Train Loss: 0.01162
+Validation | Loss: 0.00826
+Epoch: 58 | Train Loss: 0.01160
+Validation | Loss: 0.00828
+Epoch: 59 | Train Loss: 0.01161
+Validation | Loss: 0.00842
+Epoch: 60 | Train Loss: 0.01160
+Validation | Loss: 0.00837
+Epoch: 61 | Train Loss: 0.01160
+Validation | Loss: 0.00826
+Epoch: 62 | Train Loss: 0.01161
+Validation | Loss: 0.00840
+Epoch: 63 | Train Loss: 0.01161
+Validation | Loss: 0.00834
+Epoch: 64 | Train Loss: 0.01161
+Validation | Loss: 0.00829
+Epoch: 65 | Train Loss: 0.01159
+Validation | Loss: 0.00831
+Epoch: 66 | Train Loss: 0.01159
+Validation | Loss: 0.00841
+Epoch: 67 | Train Loss: 0.01158
+Validation | Loss: 0.00846
+Epoch: 68 | Train Loss: 0.01161
+Validation | Loss: 0.00830
+Early stopping triggered on epoch 68
+Epoch: 1 | TL Loss: 0.01612
+Epoch: 2 | TL Loss: 0.01167
+Epoch: 3 | TL Loss: 0.00939
+Epoch: 4 | TL Loss: 0.00821
+Epoch: 5 | TL Loss: 0.00761
+Before TL:
+Test | Loss: 0.01471
+After TL:
+Test | Loss: 0.01284

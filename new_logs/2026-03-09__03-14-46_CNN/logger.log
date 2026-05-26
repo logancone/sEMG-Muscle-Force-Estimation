@@ -1,0 +1,76 @@
+CNN
+Test Subject Id: 7 | Val Subject Id: 1
+Epoch: 1 | Train Loss: 0.01523
+Validation | Loss: 0.02514
+Epoch: 2 | Train Loss: 0.01349
+Validation | Loss: 0.01814
+Epoch: 3 | Train Loss: 0.01294
+Validation | Loss: 0.02255
+Epoch: 4 | Train Loss: 0.01253
+Validation | Loss: 0.01839
+Epoch: 5 | Train Loss: 0.01223
+Validation | Loss: 0.02548
+Epoch: 6 | Train Loss: 0.01213
+Validation | Loss: 0.01707
+Epoch: 7 | Train Loss: 0.01204
+Validation | Loss: 0.01603
+Epoch: 8 | Train Loss: 0.01192
+Validation | Loss: 0.02115
+Epoch: 9 | Train Loss: 0.01184
+Validation | Loss: 0.02426
+Epoch: 10 | Train Loss: 0.01177
+Validation | Loss: 0.02091
+Epoch: 11 | Train Loss: 0.01174
+Validation | Loss: 0.01848
+Epoch: 12 | Train Loss: 0.01162
+Validation | Loss: 0.02061
+Epoch: 13 | Train Loss: 0.01162
+Validation | Loss: 0.01658
+Epoch: 14 | Train Loss: 0.01129
+Validation | Loss: 0.02094
+Epoch: 15 | Train Loss: 0.01116
+Validation | Loss: 0.02100
+Epoch: 16 | Train Loss: 0.01115
+Validation | Loss: 0.02336
+Epoch: 17 | Train Loss: 0.01106
+Validation | Loss: 0.01869
+Epoch: 18 | Train Loss: 0.01102
+Validation | Loss: 0.02242
+Epoch: 19 | Train Loss: 0.01090
+Validation | Loss: 0.02163
+Epoch: 20 | Train Loss: 0.01071
+Validation | Loss: 0.01833
+Epoch: 21 | Train Loss: 0.01063
+Validation | Loss: 0.01673
+Epoch: 22 | Train Loss: 0.01060
+Validation | Loss: 0.03443
+Epoch: 23 | Train Loss: 0.01052
+Validation | Loss: 0.01990
+Epoch: 24 | Train Loss: 0.01044
+Validation | Loss: 0.01828
+Epoch: 25 | Train Loss: 0.01038
+Validation | Loss: 0.01965
+Epoch: 26 | Train Loss: 0.01024
+Validation | Loss: 0.01901
+Epoch: 27 | Train Loss: 0.01018
+Validation | Loss: 0.01753
+Epoch: 28 | Train Loss: 0.01012
+Validation | Loss: 0.01829
+Epoch: 29 | Train Loss: 0.01010
+Validation | Loss: 0.01941
+Epoch: 30 | Train Loss: 0.01006
+Validation | Loss: 0.01895
+Epoch: 31 | Train Loss: 0.01003
+Validation | Loss: 0.01772
+Epoch: 32 | Train Loss: 0.00991
+Validation | Loss: 0.02012
+Early stopping triggered on epoch 32
+Epoch: 1 | TL Loss: 0.01605
+Epoch: 2 | TL Loss: 0.01331
+Epoch: 3 | TL Loss: 0.01108
+Epoch: 4 | TL Loss: 0.00941
+Epoch: 5 | TL Loss: 0.00837
+Before TL:
+Test | Loss: 0.00603
+After TL:
+Test | Loss: 0.00908

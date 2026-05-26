@@ -56,6 +56,9 @@ def create_datasets(val_subj, test_subj):
     test_force = []
 
     for i in range(1, subject_count+1):
+        if i == 5 or i == 9:
+            continue
+
         filename = f"processed_data/Subject_{i}_Processed.npz"
         data = np.load(filename)
 
@@ -444,8 +447,11 @@ def train_tcn(test_id, val_id):
 
 def full_train_loop():
     for i in range(subject_count, 0, -1): #TEMP REVERSE
+        if i == 5 or i == 9:
+            continue
+
         val_id = random.randint(1, subject_count)
-        while val_id == i or val_id == 5:
+        while val_id == i or val_id == 5 or val_id == 9:
             val_id = random.randint(1, subject_count)
         
         print(f"Test Subject Id: {i} | Val Subject Id: {val_id}")
@@ -460,7 +466,7 @@ def train_to_failure():
         avail_combos.append(eval(t))
     
     while len(avail_combos) > 0:
-        combo_id = random.randint(0, len(avail_combos)//2)
+        combo_id = random.randint(len(avail_combos)//2, len(avail_combos))
         tup = avail_combos.pop(combo_id)
 
         print(f"Test Subject Id: {tup[0]} | Val Subject Id: {tup[1]}")
@@ -470,6 +476,15 @@ def train_to_failure():
 
 
 if __name__ == "__main__":
-    # full_train_loop()
-    # train_cnn(17, 8)
-    train_to_failure()
+    full_train_loop()
+    # # train_cnn(17, 8)
+    # # train_to_failure()
+    # train_clstm(8, 6)
+    # train_tcn(8, 6)
+
+    # train_clstm(7, 2)
+    # train_tcn(7, 2)
+
+    # train_clstm(16, 10)
+    # train_tcn(16, 10)
+

@@ -1,0 +1,70 @@
+CNN
+Test Subject Id: 3 | Val Subject Id: 1
+Epoch: 1 | Train Loss: 0.01525
+Validation | Loss: 0.01950
+Epoch: 2 | Train Loss: 0.01349
+Validation | Loss: 0.02135
+Epoch: 3 | Train Loss: 0.01290
+Validation | Loss: 0.01969
+Epoch: 4 | Train Loss: 0.01250
+Validation | Loss: 0.01718
+Epoch: 5 | Train Loss: 0.01223
+Validation | Loss: 0.01883
+Epoch: 6 | Train Loss: 0.01215
+Validation | Loss: 0.01865
+Epoch: 7 | Train Loss: 0.01202
+Validation | Loss: 0.01867
+Epoch: 8 | Train Loss: 0.01194
+Validation | Loss: 0.01762
+Epoch: 9 | Train Loss: 0.01177
+Validation | Loss: 0.01765
+Epoch: 10 | Train Loss: 0.01168
+Validation | Loss: 0.02104
+Epoch: 11 | Train Loss: 0.01136
+Validation | Loss: 0.01768
+Epoch: 12 | Train Loss: 0.01128
+Validation | Loss: 0.01726
+Epoch: 13 | Train Loss: 0.01124
+Validation | Loss: 0.01837
+Epoch: 14 | Train Loss: 0.01118
+Validation | Loss: 0.01806
+Epoch: 15 | Train Loss: 0.01118
+Validation | Loss: 0.01916
+Epoch: 16 | Train Loss: 0.01114
+Validation | Loss: 0.01818
+Epoch: 17 | Train Loss: 0.01095
+Validation | Loss: 0.01793
+Epoch: 18 | Train Loss: 0.01088
+Validation | Loss: 0.01792
+Epoch: 19 | Train Loss: 0.01086
+Validation | Loss: 0.01728
+Epoch: 20 | Train Loss: 0.01086
+Validation | Loss: 0.01786
+Epoch: 21 | Train Loss: 0.01081
+Validation | Loss: 0.01825
+Epoch: 22 | Train Loss: 0.01076
+Validation | Loss: 0.01941
+Epoch: 23 | Train Loss: 0.01066
+Validation | Loss: 0.01829
+Epoch: 24 | Train Loss: 0.01062
+Validation | Loss: 0.01829
+Epoch: 25 | Train Loss: 0.01064
+Validation | Loss: 0.01960
+Epoch: 26 | Train Loss: 0.01061
+Validation | Loss: 0.01731
+Epoch: 27 | Train Loss: 0.01057
+Validation | Loss: 0.01947
+Epoch: 28 | Train Loss: 0.01054
+Validation | Loss: 0.01809
+Epoch: 29 | Train Loss: 0.01049
+Validation | Loss: 0.01825
+Early stopping triggered on epoch 29
+Epoch: 1 | TL Loss: 0.00670
+Epoch: 2 | TL Loss: 0.00557
+Epoch: 3 | TL Loss: 0.00489
+Epoch: 4 | TL Loss: 0.00448
+Epoch: 5 | TL Loss: 0.00429
+Before TL:
+Test | Loss: 0.01294
+After TL:
+Test | Loss: 0.01020
